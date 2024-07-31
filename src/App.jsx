@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+const TURN = {
+  X: "X",
+  O: "O" 
 }
 
-export default App
+const Squares = ({ index, updateBoard, children, isSelected }) => {
+  const clase = isSelected ? "bg-primary" : "bg-dark-subtle"
+
+  const handeClick = () => {
+    updateBoard(index)
+  }
+
+  return <div className={`d-flex justify-content-center align-items-center col ${clase}`} onClick={handeClick} style={{width: "15rem", height: "15rem"}}>{children}</div>;
+};
+
+function App() {
+
+  const [board, setBoard] = useState(Array(9).fill(null));
+  const [turn, setTurn] = useState(TURN.X)
+
+  const updateBoard = (index) => {
+
+    if(board[index]) return
+
+    const newBoard = [...board]
+    newBoard[index] = turn
+    setBoard(newBoard)
+    const newTurn = turn == TURN.X ? TURN.O : TURN.X
+    setTurn(newTurn)
+  }
+  
+
+  return (
+    <div className="container pt-5 d-flex flex-column" style={{alignItems: "center"}}>
+      <h1 className="text-center">Tic Tak Toe</h1>
+      <div className="row row-cols-4 pt-5 gap-3 justify-content-center" style={{width: "1000px"}}>
+        {board.map((_, index) => {
+          return <Squares 
+          index={index}
+          key={index} 
+          updateBoard={updateBoard}
+          >
+            {board[index]}
+          </Squares>;
+        })}
+      </div>
+      
+      <section>
+          <Squares isSelected={TURN.X == turn}>X</Squares>
+          <Squares isSelected={TURN.O == turn}>O</Squares>
+      </section>
+    </div>
+  );
+}
+
+export default App;
